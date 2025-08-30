@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .template-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .template-card.selected {
+            border: 3px solid #667eea;
+            transform: scale(1.05);
+        }
+        
+        .step-indicator {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .resume-preview {
+            background: white;
+            min-height: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .preview-template-1 {
+            padding: 40px;
+            background: white;
+        }
+        
+        .preview-template-2 {
+            padding: 30px;
+            background: #f8fafc;
+            border-left: 5px solid #667eea;
+        }
+        
+        .preview-template-3 {
+            padding: 35px;
+            background: white;
+            border-top: 8px solid #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Professional Resume Builder</h1>
+            <p class="text-xl text-white opacity-90">Create stunning resumes in minutes. Choose a template and get started!</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="bg-white rounded-2xl shadow-2xl overflow-hidden fade-in">
+            <!-- Navigation Steps -->
+            <div class="border-b border-gray-200">
+                <div class="flex justify-center space-x-8 py-6">
+                    <div class="flex items-center space-x-2">
+                        <div id="step-1" class="step-indicator active">1</div>
+                        <span class="text-sm font-medium">Choose Template</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div id="step-2" class="step-indicator">2</div>
+                        <span class="text-sm font-medium">Enter Details</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div id="step-3" class="step-indicator">3</div>
+                        <span class="text-sm font-medium">Preview</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div id="step-4" class="step-indicator">4</div>
+                        <span class="text-sm font-medium">Download</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="p-8">
+                <!-- Step 1: Template Selection -->
+                <div id="step1-content" class="fade-in">
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Choose Your Resume Template</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="template-card rounded-lg border-2 border-gray-200 p-4" data-template="1">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/efdab7e9-5f4e-4ab5-9a57-869693eab1de.png" alt="Modern minimalist resume template with clean lines and professional layout" class="w-full h-64 object-cover rounded mb-4"
+                            />
+                            <h3 class="text-lg font-medium text-center">Modern Minimalist</h3>
+                            <p class="text-sm text-gray-600 text-center">Clean and professional design</p>
+                        </div>
+
+                        <div class="template-card rounded-lg border-2 border-gray-200 p-4" data-template="2">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c2ea0d57-1670-402e-a0fb-91af133b293d.png" alt="Creative contemporary resume template with colorful accents and modern typography" class="w-full h-64 object-cover rounded mb-4"
+                            />
+                            <h3 class="text-lg font-medium text-center">Creative Contemporary</h3>
+                            <p class="text-sm text-gray-600 text-center">Modern and eye-catching design</p>
+                        </div>
+
+                        <div class="template-card rounded-lg border-2 border-gray-200 p-4" data-template="3">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e1fb9c3a-037d-4132-bdfc-4a7e7580a30d.png" alt="Professional corporate resume template with traditional layout and formal styling" class="w-full h-64 object-cover rounded mb-4"
+                            />
+                            <h3 class="text-lg font-medium text-center">Professional Corporate</h3>
+                            <p class="text-sm text-gray-600 text-center">Traditional and formal design</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-8">
+                        <button id="next-to-form" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors opacity-50 cursor-not-allowed" disabled>
+                            Continue to Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Form Input -->
+                <div id="step2-content" class="hidden fade-in">
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Enter Your Information</h2>
+
+                    <form id="resume-form" class="max-w-4xl mx-auto">
+                        <!-- Personal Information -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Personal Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                    <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="John Doe">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Job Title *</label>
+                                    <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Software Engineer">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                                    <input type="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="john@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                    <input type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+1 (555) 123-4567">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Summary *</label>
+                                    <textarea required rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Experienced professional with 5+ years in the industry..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Work Experience</h3>
+                            <div id="experience-container">
+                                <div class="experience-item border-b border-gray-200 pb-4 mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Company *</label>
+                                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Company Name">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Position *</label>
+                                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Position Title">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
+                                            <input type="month" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                            <input type="month" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                            <label class="flex items-center mt-2">
+                                                <input type="checkbox" class="mr-2"> Current Position
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                                        <textarea required rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Responsibilities and achievements..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-experience" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-200">
+                                + Add Another Experience
+                            </button>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Education</h3>
+                            <div id="education-container">
+                                <div class="education-item border-b border-gray-200 pb-4 mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Institution *</label>
+                                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="University Name">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Degree *</label>
+                                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Bachelor of Science">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Field of Study *</label>
+                                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Computer Science">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Graduation Year *</label>
+                                            <input type="month" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-education" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-200">
+                                + Add Another Education
+                            </button>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Skills</h3>
+                            <div id="skills-container">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Skill *</label>
+                                        <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="JavaScript">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Proficiency Level *</label>
+                                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                            <option>Beginner</option>
+                                            <option>Intermediate</option>
+                                            <option>Advanced</option>
+                                            <option>Expert</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-skill" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-200">
+                                + Add Another Skill
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-8">
+                        <button id="generate-preview" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            Generate Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Preview -->
+                <div id="step3-content" class="hidden fade-in">
+                    <h2 class="text-2xl font-semibold mb-6 text-center">Resume Preview</h2>
+                    <div id="resume-preview" class="resume-preview rounded-lg">
+                        <!-- Preview content will be generated here -->
+                    </div>
+                    <div class="text-center mt-8 space-x-4">
+                        <button id="back-to-form" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+                            Edit Details
+                        </button>
+                        <button id="download-resume" class="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Download -->
+                <div id="step4-content" class="hidden fade-in">
+                    <div class="text-center">
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                            <h2 class="text-2xl font-semibold mb-2">Resume Downloaded Successfully!</h2>
+                            <p>Your professional resume has been downloaded to your device.</p>
+                        </div>
+                        <div class="space-x-4">
+                            <button id="create-another" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                Create Another Resume
+                            </button>
+                            <button id="view-downloaded" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-400 transition-colors">
+                                View Download Folder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedTemplate = null;
+        let resumeData = {};
+
+        // DOM elements
+        const step1Content = document.getElementById('step1-content');
+        const step2Content = document.getElementById('step2-content');
+        const step3Content = document.getElementById('step3-content');
+        const step4Content = document.getElementById('step4-content');
+        const nextToFormBtn = document.getElementById('next-to-form');
+        const generatePreviewBtn = document.getElementById('generate-preview');
+        const downloadResumeBtn = document.getElementById('download-resume');
+        const backToFormBtn = document.getElementById('back-to-form');
+        const createAnotherBtn = document.getElementById('create-another');
+        const viewDownloadedBtn = document.getElementById('view-downloaded');
+        const templateCards = document.querySelectorAll('.template-card');
+        const steps = document.querySelectorAll('.step-indicator');
+
+        // Template selection
+        templateCards.forEach(card => {
+            card.addEventListener('click', () => {
+                templateCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedTemplate = card.dataset.template;
+                nextToFormBtn.disabled = false;
+                nextToFormBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+        });
+
+        // Navigation handlers
+        nextToFormBtn.addEventListener('click', () => {
+            step1Content.classList.add('hidden');
+            step2Content.classList.remove('hidden');
+            updateSteps(2);
+        });
+
+        generatePreviewBtn.addEventListener('click', () => {
+            if (validateForm()) {
+                collectFormData();
+                generatePreview();
+                step2Content.classList.add('hidden');
+                step3Content.classList.remove('hidden');
+                updateSteps(3);
+            }
+        });
+
+        backToFormBtn.addEventListener('click', () => {
+            step3Content.classList.add('hidden');
+            step2Content.classList.remove('hidden');
+            updateSteps(2);
+        });
+
+        downloadResumeBtn.addEventListener('click', () => {
+            downloadPDF();
+            step3Content.classList.add('hidden');
+            step4Content.classList.remove('hidden');
+            updateSteps(4);
+        });
+
+        createAnotherBtn.addEventListener('click', () => {
+            resetApp();
+        });
+
+        viewDownloadedBtn.addEventListener('click', () => {
+            alert('Please check your downloads folder for the resume PDF file.');
+        });
+
+        // Dynamic form elements
+        document.getElementById('add-experience').addEventListener('click', () => {
+            const container = document.getElementById('experience-container');
+            const newItem = container.firstElementChild.cloneNode(true);
+            newItem.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            container.appendChild(newItem);
+        });
+
+        document.getElementById('add-education').addEventListener('click', () => {
+            const container = document.getElementById('education-container');
+            const newItem = container.firstElementChild.cloneNode(true);
+            newItem.querySelectorAll('input').forEach(input => input.value = '');
+            container.appendChild(newItem);
+        });
+
+        document.getElementById('add-skill').addEventListener('click', () => {
+            const container = document.getElementById('skills-container');
+            const newItem = container.firstElementChild.cloneNode(true);
+            newItem.querySelectorAll('input, select').forEach(input => {
+                if (input.type !== 'select') input.value = '';
+                if (input.tagName === 'SELECT') input.selectedIndex = 0;
+            });
+            container.appendChild(newItem);
+        });
+
+        // Helper functions
+        function updateSteps(activeStep) {
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < activeStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === activeStep) {
+                    step.classList.add('active');
+                }
+            });
+        }
+
+        function validateForm() {
+            // Basic validation - in real app, this would be more comprehensive
+            const requiredFields = document.querySelectorAll('input[required], textarea[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+
+            return isValid;
+        }
+
+        function collectFormData() {
+            resumeData = {
+                template: selectedTemplate,
+                personal: {
+                    name: document.querySelector('input[placeholder="John Doe"]').value,
+                    jobTitle: document.querySelector('input[placeholder="Software Engineer"]').value,
+                    email: document.querySelector('input[type="email"]').value,
+                    phone: document.querySelector('input[type="tel"]').value,
+                    summary: document.querySelector('textarea[placeholder*="Experienced professional"]').value
+                },
+                experiences: [],
+                education: [],
+                skills: []
+            };
+
+            // Collect experiences
+            document.querySelectorAll('.experience-item').forEach(item => {
+                const inputs = item.querySelectorAll('input, textarea');
+                resumeData.experiences.push({
+                    company: inputs[0].value,
+                    position: inputs[1].value,
+                    startDate: inputs[2].value,
+                    endDate: inputs[3].value,
+                    description: inputs[4].value
+                });
+            });
+
+            // Collect education
+            document.querySelectorAll('.education-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                resumeData.education.push({
+                    institution: inputs[0].value,
+                    degree: inputs[1].value,
+                    field: inputs[2].value,
+                    graduation: inputs[3].value
+                });
+            });
+
+            // Collect skills
+            document.querySelectorAll('#skills-container > div').forEach(item => {
+                const inputs = item.querySelectorAll('input, select');
+                resumeData.skills.push({
+                    skill: inputs[0].value,
+                    level: inputs[1].value
+                });
+            });
+        }
+
+        function generatePreview() {
+            const previewContainer = document.getElementById('resume-preview');
+            previewContainer.innerHTML = '';
+
+            switch (selectedTemplate) {
+                case '1':
+                    previewContainer.className = 'resume-preview preview-template-1';
+                    generateTemplate1(previewContainer);
+                    break;
+                case '2':
+                    previewContainer.className = 'resume-preview preview-template-2';
+                    generateTemplate2(previewContainer);
+                    break;
+                case '3':
+                    previewContainer.className = 'resume-preview preview-template-3';
+                    generateTemplate3(previewContainer);
+                    break;
+            }
+        }
+
+        function generateTemplate1(container) {
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">${resumeData.personal.name}</h1>
+                    <h2 class="text-xl text-blue-600 mb-4">${resumeData.personal.jobTitle}</h2>
+                    <p class="text-gray-600">${resumeData.personal.email} • ${resumeData.personal.phone}</p>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2">SUMMARY</h3>
+                    <p class="text-gray-700">${resumeData.personal.summary}</p>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2">EXPERIENCE</h3>
+                    ${resumeData.experiences.map(exp => `
+                        <div class="mb-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="text-lg font-semibold">${exp.position}</h4>
+                                <span class="text-sm text-gray-600">${exp.startDate} - ${exp.endDate || 'Present'}</span>
+                            </div>
+                            <h5 class="text-blue-600 mb-2">${exp.company}</h5>
+                            <p class="text-gray-700">${exp.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2">EDUCATION</h3>
+                    ${resumeData.education.map(edu => `
+                        <div class="mb-4">
+                            <h4 class="text-lg font-semibold">${edu.degree} in ${edu.field}</h4>
+                            <h5 class="text-blue-600">${edu.institution}</h5>
+                            <p class="text-gray-600">Graduated: ${edu.graduation}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b-2 border-blue-600 pb-2">SKILLS</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${resumeData.skills.map(skill => `
+                            <div>
+                                <span class="font-medium">${skill.skill}:</span>
+                                <span class="text-gray-600"> ${skill.level}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTemplate2(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="md:col-span-2">
+                        <h1 class="text-4xl font-bold text-gray-800 mb-2">${resumeData.personal.name}</h1>
+                        <h2 class="text-2xl text-blue-600 mb-6">${resumeData.personal.jobTitle}</h2>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">PROFILE</h3>
+                            <p class="text-gray-700 leading-relaxed">${resumeData.personal.summary}</p>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">EXPERIENCE</h3>
+                            ${resumeData.experiences.map(exp => `
+                                <div class="mb-6">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="text-lg font-semibold">${exp.position}</h4>
+                                        <span class="text-sm text-gray-600">${exp.startDate} - ${exp.endDate || 'Present'}</span>
+                                    </div>
+                                    <h5 class="text-blue-600 mb-2 font-medium">${exp.company}</h5>
+                                    <p class="text-gray-700">${exp.description}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">CONTACT</h3>
+                            <p class="text-gray-600 mb-2">${resumeData.personal.email}</p>
+                            <p class="text-gray-600">${resumeData.personal.phone}</p>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">EDUCATION</h3>
+                            ${resumeData.education.map(edu => `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold">${edu.degree}</h4>
+                                    <p class="text-blue-600">${edu.institution}</p>
+                                    <p class="text-sm text-gray-600">${edu.graduation}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">SKILLS</h3>
+                            ${resumeData.skills.map(skill => `
+                                <div class="mb-2">
+                                    <span class="font-medium">${skill.skill}</span>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${getSkillWidth(skill.level)}%"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateTemplate3(container) {
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">${resumeData.personal.name}</h1>
+                    <h2 class="text-2xl text-blue-600 mb-4">${resumeData.personal.jobTitle}</h2>
+                    <div class="flex justify-center space-x-4 text-gray-600">
+                        <span>${resumeData.personal.email}</span>
+                        <span>•</span>
+                        <span>${resumeData.personal.phone}</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                    <div class="md:col-span-3">
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-l-4 border-blue-600 pl-3">PROFESSIONAL SUMMARY</h3>
+                            <p class="text-gray-700 leading-relaxed">${resumeData.personal.summary}</p>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-l-4 border-blue-600 pl-3">PROFESSIONAL EXPERIENCE</h3>
+                            ${resumeData.experiences.map(exp => `
+                                <div class="mb-6">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="text-lg font-semibold">${exp.position}</h4>
+                                        <span class="text-sm text-gray-600">${exp.startDate} - ${exp.endDate || 'Present'}</span>
+                                    </div>
+                                    <h5 class="text-blue-600 mb-2 font-medium">${exp.company}</h5>
+                                    <p class="text-gray-700">${exp.description}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-l-4 border-blue-600 pl-3">EDUCATION</h3>
+                            ${resumeData.education.map(edu => `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold">${edu.degree}</h4>
+                                    <p class="text-blue-600">${edu.institution}</p>
+                                    <p class="text-sm text-gray-600">${edu.field}</p>
+                                    <p class="text-sm text-gray-600">${edu.graduation}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-l-4 border-blue-600 pl-3">SKILLS & COMPETENCIES</h3>
+                            <div class="flex flex-wrap gap-2">
+                                ${resumeData.skills.map(skill => `
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${skill.skill} (${skill.level})</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSkillWidth(level) {
+            const levels = {
+                'Beginner': 25,
+                'Intermediate': 50,
+                'Advanced': 75,
+                'Expert': 100
+            };
+            return levels[level] || 50;
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const preview = document.getElementById('resume-preview');
+            
+            try {
+                const canvas = await html2canvas(preview, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`${resumeData.personal.name.replace(/\s+/g, '_')}_Resume.pdf`);
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+        }
+
+        function resetApp() {
+            // Reset form
+            document.getElementById('resume-form').reset();
+            
+            // Reset template selection
+            templateCards.forEach(card => card.classList.remove('selected'));
+            selectedTemplate = null;
+            nextToFormBtn.disabled = true;
+            nextToFormBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            // Reset steps
+            updateSteps(1);
+            
+            // Show first step
+            step4Content.classList.add('hidden');
+            step1Content.classList.remove('hidden');
+            
+            // Clear dynamic containers (keep first item)
+            const experienceContainer = document.getElementById('experience-container');
+            while (experienceContainer.children.length > 1) {
+                experienceContainer.removeChild(experienceContainer.lastChild);
+            }
+            
+            const educationContainer = document.getElementById('education-container');
+            while (educationContainer.children.length > 1) {
+                educationContainer.removeChild(educationContainer.lastChild);
+            }
+            
+            const skillsContainer = document.getElementById('skills-container');
+            while (skillsContainer.children.length > 1) {
+                skillsContainer.removeChild(skillsContainer.lastChild);
+            }
+        }
+    </script>
+</body>
+
+</html>
