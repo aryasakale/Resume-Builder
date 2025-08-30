@@ -21,6 +21,3 @@ This tool is perfect for job seekers, freelancers, and anyone looking to create 
 - **jsPDF**: For generating downloadable PDFs from the resume preview.
 - **html2canvas**: For capturing screenshots of the resume preview to convert into PDF format.
 
-## Project Structure
-Here’s a basic overview of the project structure:
-
